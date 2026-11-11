@@ -55,6 +55,7 @@ jobs:
             throw "Control pull unexpectedly succeeded without the helper"
           }
           Write-Output "CONTROL_RESULT=expected_failure"
+          exit 0
 
       - name: Control without helper (registry API)
         if: runner.os == 'macOS'
