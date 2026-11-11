@@ -15,12 +15,14 @@ package ecr
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"os"
 	"testing"
 
 	ecr "github.com/awslabs/amazon-ecr-credential-helper/ecr-login/api"
+	ecrconfig "github.com/awslabs/amazon-ecr-credential-helper/ecr-login/config"
 	mock_api "github.com/awslabs/amazon-ecr-credential-helper/ecr-login/mocks"
 	"github.com/docker/docker-credential-helpers/credentials"
 	"github.com/stretchr/testify/assert"
@@ -57,6 +59,8 @@ func unsetEnv(t *testing.T, key string) {
 }
 
 func TestGetSuccess(t *testing.T) {
+	t.Setenv("AWS_ECR_PRIVATE_TOKEN_TYPE", "")
+
 	factory := &mock_api.MockClientFactory{}
 	client := &mock_api.MockClient{}
 
@@ -81,6 +85,8 @@ func TestGetSuccess(t *testing.T) {
 }
 
 func TestGetError(t *testing.T) {
+	t.Setenv("AWS_ECR_PRIVATE_TOKEN_TYPE", "")
+
 	factory := &mock_api.MockClientFactory{}
 	client := &mock_api.MockClient{}
 
@@ -224,6 +230,8 @@ func TestDeleteNotImplemented(t *testing.T) {
 }
 
 func TestGetPropagatesContext(t *testing.T) {
+	t.Setenv("AWS_ECR_PRIVATE_TOKEN_TYPE", "")
+
 	factory := &mock_api.MockClientFactory{}
 	client := &mock_api.MockClient{}
 
@@ -250,6 +258,8 @@ func TestGetPropagatesContext(t *testing.T) {
 }
 
 func TestGetFipsPropagatesContext(t *testing.T) {
+	t.Setenv("AWS_ECR_PRIVATE_TOKEN_TYPE", "")
+
 	factory := &mock_api.MockClientFactory{}
 	client := &mock_api.MockClient{}
 
@@ -275,6 +285,35 @@ func TestGetFipsPropagatesContext(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, expectedUsername, username)
 	assert.Equal(t, expectedPassword, password)
+}
+
+func TestGetGlobalTokenUsesRegistryRegionAndReturnsRawToken(t *testing.T) {
+	t.Setenv("AWS_ECR_PRIVATE_TOKEN_TYPE", ecrconfig.TokenTypeGlobal)
+
+	factory := &mock_api.MockClientFactory{}
+	client := &mock_api.MockClient{}
+	helper := NewECRHelper(WithClientFactory(factory))
+	registryHostname := "123456789012.dkr.ecr.us-west-2.amazonaws.com"
+	rawAccessToken := "raw-signin-access-token"
+
+	factory.NewClientFromRegionFn = func(_ context.Context, gotRegion string) (ecr.Client, error) {
+		assert.Equal(t, "us-west-2", gotRegion)
+		return client, nil
+	}
+	client.GetCredentialsFn = func(_ context.Context, gotServerURL string) (*ecr.Auth, error) {
+		assert.Equal(t, registryHostname, gotServerURL)
+		return &ecr.Auth{
+			Username:      "AWS",
+			Password:      rawAccessToken,
+			ProxyEndpoint: "https://" + registryHostname,
+		}, nil
+	}
+
+	username, password, err := helper.Get(registryHostname)
+	assert.NoError(t, err)
+	assert.Equal(t, "AWS", username)
+	assert.Equal(t, rawAccessToken, password)
+	assert.NotEqual(t, base64.StdEncoding.EncodeToString([]byte("AWS:"+rawAccessToken)), password)
 }
 
 func TestListPropagatesContext(t *testing.T) {

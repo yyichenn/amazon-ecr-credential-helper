@@ -259,6 +259,8 @@ func TestExtractRegistry(t *testing.T) {
 }
 
 func TestGetAuthConfigSuccess(t *testing.T) {
+	t.Setenv("AWS_ECR_PRIVATE_TOKEN_TYPE", "")
+
 	ecrClient := &mock_api.MockECRAPI{}
 	credentialCache := &mock_cache.MockCredentialsCache{}
 
@@ -303,6 +305,8 @@ func TestGetAuthConfigSuccess(t *testing.T) {
 }
 
 func TestGetAuthConfigNoMatchAuthorizationToken(t *testing.T) {
+	t.Setenv("AWS_ECR_PRIVATE_TOKEN_TYPE", "")
+
 	ecrClient := &mock_api.MockECRAPI{}
 	credentialCache := &mock_cache.MockCredentialsCache{}
 
@@ -330,6 +334,8 @@ func TestGetAuthConfigNoMatchAuthorizationToken(t *testing.T) {
 }
 
 func TestGetAuthConfigGetCacheSuccess(t *testing.T) {
+	t.Setenv("AWS_ECR_PRIVATE_TOKEN_TYPE", "")
+
 	ecrClient := &mock_api.MockECRAPI{}
 	credentialCache := &mock_cache.MockCredentialsCache{}
 
@@ -361,6 +367,8 @@ func TestGetAuthConfigGetCacheSuccess(t *testing.T) {
 }
 
 func TestGetAuthConfigSuccessInvalidCacheHit(t *testing.T) {
+	t.Setenv("AWS_ECR_PRIVATE_TOKEN_TYPE", "")
+
 	ecrClient := &mock_api.MockECRAPI{}
 	credentialCache := &mock_cache.MockCredentialsCache{}
 
@@ -415,6 +423,8 @@ func TestGetAuthConfigSuccessInvalidCacheHit(t *testing.T) {
 }
 
 func TestGetAuthConfigBadBase64(t *testing.T) {
+	t.Setenv("AWS_ECR_PRIVATE_TOKEN_TYPE", "")
+
 	ecrClient := &mock_api.MockECRAPI{}
 	credentialCache := &mock_cache.MockCredentialsCache{}
 
@@ -443,6 +453,8 @@ func TestGetAuthConfigBadBase64(t *testing.T) {
 }
 
 func TestGetAuthConfigMissingResponse(t *testing.T) {
+	t.Setenv("AWS_ECR_PRIVATE_TOKEN_TYPE", "")
+
 	ecrClient := &mock_api.MockECRAPI{}
 	credentialCache := &mock_cache.MockCredentialsCache{}
 
@@ -466,6 +478,8 @@ func TestGetAuthConfigMissingResponse(t *testing.T) {
 }
 
 func TestGetAuthConfigECRError(t *testing.T) {
+	t.Setenv("AWS_ECR_PRIVATE_TOKEN_TYPE", "")
+
 	ecrClient := &mock_api.MockECRAPI{}
 	credentialCache := &mock_cache.MockCredentialsCache{}
 
@@ -489,6 +503,8 @@ func TestGetAuthConfigECRError(t *testing.T) {
 }
 
 func TestGetAuthConfigSuccessInvalidCacheHitFallback(t *testing.T) {
+	t.Setenv("AWS_ECR_PRIVATE_TOKEN_TYPE", "")
+
 	ecrClient := &mock_api.MockECRAPI{}
 	credentialCache := &mock_cache.MockCredentialsCache{}
 
@@ -960,6 +976,8 @@ func TestECRPublicClientWrapper(t *testing.T) {
 }
 
 func TestContextCancel(t *testing.T) {
+	t.Setenv("AWS_ECR_PRIVATE_TOKEN_TYPE", "")
+
 	// Start an HTTP server that accepts connections but never responds,
 	// simulating a hanging endpoint for both credential retrieval and
 	// ECR API calls.
