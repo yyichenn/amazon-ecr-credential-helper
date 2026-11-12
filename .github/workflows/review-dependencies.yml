@@ -8,7 +8,7 @@ on:
 
 jobs:
   review:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     permissions:
       # Write permissions needed to comment review results on PR.
@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/dependency-review-action@v4
+      - uses: actions/dependency-review-action@v5
         with:
           config-file: './.github/dependency-review-config.yml'
           comment-summary-in-pr: always
